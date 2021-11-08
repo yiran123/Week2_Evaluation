@@ -1,7 +1,5 @@
 const View = (() => {
   const domElements = {
-    // region: document.querySelector("region"),
-    // model: document.querySelector("")
     table: document.querySelector("#table"),
     regionSelect: document.querySelector("#regionSelect"),
     modelSelect: document.querySelector("#modelSelect"),
@@ -64,7 +62,6 @@ const Model = (() => {
     }
   }
   //-----------sum end--------------
-  //console.log(dataRegion, dataModel);
   return {
     res,
     dataRegion,
@@ -73,23 +70,28 @@ const Model = (() => {
 })();
 
 const Controller = ((view, model) => {
-  const createTable = () => {
+  const loadTableData = (regionType, modelType) => {
     let tmp = "";
     model.res.forEach((element) => {
-      tmp += `
-      <tr>
-        <td id="${element.region}">${element.region}</td>
-        <td id="${element.model}">${element.model}</td>
-        <td id="${element.sales}">${element.sales}</td>
-      </tr>
-      `;
+      if (
+        (regionType === element.region || regionType === "all") &&
+        (modelType === element.model || modelType === "all")
+      ) {
+        tmp += `
+        <tr>
+          <td id="${element.region}">${element.region}</td>
+          <td id="${element.model}">${element.model}</td>
+          <td id="${element.sales}">${element.sales}</td>
+        </tr>
+        `;
+      }
     });
     view.render(table, tmp);
   };
   const createRegionList = () => {
     let tmp = "";
     const regionArr = [...model.dataRegion];
-    console.log(regionArr);
+    tmp += `<option value="all">all</option>`;
     regionArr.forEach((key) => {
       tmp += `<option value="${key}">${key}</option>`;
     });
@@ -98,7 +100,7 @@ const Controller = ((view, model) => {
   const createModelList = () => {
     let tmp = "";
     const modelArr = [...model.dataModel];
-    console.log(modelArr);
+    tmp += `<option value="all">all</option>`;
     modelArr.forEach((key) => {
       tmp += `<option value="${key}">${key}</option>`;
     });
@@ -106,42 +108,16 @@ const Controller = ((view, model) => {
   };
   const setUpEvent = () => {
     view.domElements.regionSelect.addEventListener("change", (event) => {
-      const filterRegion = model.res.filter(
-        (element) => element.region === event.target.value
-      );
-      let tmp = "";
-      filterRegion.forEach((element) => {
-        tmp += `
-        <tr>
-          <td id="${element.region}">${element.region}</td>
-          <td id="${element.model}">${element.model}</td>
-          <td id="${element.sales}">${element.sales}</td>
-        </tr>
-        `;
-      });
-      view.render(table, tmp);
-      console.log(filterRegion);
+      view.domElements.regionSelect.value = event.target.value;
+      loadTableData(event.target.value, view.domElements.modelSelect.value);
     });
     view.domElements.modelSelect.addEventListener("change", (event) => {
-      const filterModel = model.res.filter(
-        (element) => element.model === event.target.value
-      );
-      let tmp = "";
-      filterModel.forEach((element) => {
-        tmp += `
-        <tr>
-          <td id="${element.region}">${element.region}</td>
-          <td id="${element.model}">${element.model}</td>
-          <td id="${element.sales}">${element.sales}</td>
-        </tr>
-        `;
-      });
-      view.render(table, tmp);
-      console.log(filterModel);
+      view.domElements.modelSelect.value = event.target.value;
+      loadTableData(view.domElements.regionSelect.value, event.target.value);
     });
   };
   const init = () => {
-    createTable();
+    loadTableData("all", "all");
     createRegionList();
     createModelList();
     setUpEvent();
