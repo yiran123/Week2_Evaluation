@@ -3,6 +3,8 @@ const View = (() => {
     // region: document.querySelector("region"),
     // model: document.querySelector("")
     table: document.querySelector("#table"),
+    regionSelect: document.querySelector("#regionSelect"),
+    modelSelect: document.querySelector("#modelSelect"),
   };
   const render = (element, tmp) => {
     element.innerHTML = tmp;
@@ -26,11 +28,19 @@ const Model = (() => {
     { region: "CA", model: "C", sales: 230 },
     { region: "CA", model: "D", sales: 400 },
   ];
+  //-----------sum--------------
   let sum = data[0].sales;
   let res = [];
   let tmp = [];
+  let dataRegion = new Set();
+  let dataModel = new Set();
   tmp.push(data[0]);
+  //-----------filter--------------
+  dataRegion.add(data[0].region);
+  dataModel.add(data[0].model);
   for (let i = 1; i < data.length; i++) {
+    dataRegion.add(data[i].region);
+    dataModel.add(data[i].model);
     if (data[i].region !== data[i - 1].region) {
       tmp.push({
         region: data[i - 1].region,
@@ -39,7 +49,7 @@ const Model = (() => {
       });
       res = [...res, ...tmp];
       sum = 0;
-      console.log(tmp);
+      //console.log(tmp);
       tmp = [];
     }
     tmp.push(data[i]);
@@ -53,8 +63,12 @@ const Model = (() => {
       res = [...res, ...tmp];
     }
   }
+  //-----------sum end--------------
+  //console.log(dataRegion, dataModel);
   return {
     res,
+    dataRegion,
+    dataModel,
   };
 })();
 
@@ -70,8 +84,29 @@ const Controller = ((view, model) => {
     });
     view.render(table, tmp);
   };
+  const createRegionList = () => {
+    let tmp = "";
+    const regionArr = [...model.dataRegion];
+    console.log(regionArr);
+    regionArr.forEach((key) => {
+      tmp += `<option value="${key}">${key}</option>`;
+    });
+    view.render(regionSelect, tmp);
+  };
+  const createModelList = () => {
+    let tmp = "";
+    const modelArr = [...model.dataModel];
+    console.log(modelArr);
+    modelArr.forEach((key) => {
+      tmp += `<option value="${key}">${key}</option>`;
+    });
+    view.render(modelSelect, tmp);
+  };
+  const setUpEvent = () => {};
   const init = () => {
     createTable();
+    createRegionList();
+    createModelList();
   };
   return { init };
 })(View, Model);
