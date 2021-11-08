@@ -76,11 +76,13 @@ const Controller = ((view, model) => {
   const createTable = () => {
     let tmp = "";
     model.res.forEach((element) => {
-      tmp += `<tr>
-      <td id="${element.region}">${element.region}</td>
-      <td id="${element.model}">${element.model}</td>
-      <td id="${element.sales}">${element.sales}</td>
-    </tr>`;
+      tmp += `
+      <tr>
+        <td id="${element.region}">${element.region}</td>
+        <td id="${element.model}">${element.model}</td>
+        <td id="${element.sales}">${element.sales}</td>
+      </tr>
+      `;
     });
     view.render(table, tmp);
   };
@@ -102,11 +104,47 @@ const Controller = ((view, model) => {
     });
     view.render(modelSelect, tmp);
   };
-  const setUpEvent = () => {};
+  const setUpEvent = () => {
+    view.domElements.regionSelect.addEventListener("change", (event) => {
+      const filterRegion = model.res.filter(
+        (element) => element.region === event.target.value
+      );
+      let tmp = "";
+      filterRegion.forEach((element) => {
+        tmp += `
+        <tr>
+          <td id="${element.region}">${element.region}</td>
+          <td id="${element.model}">${element.model}</td>
+          <td id="${element.sales}">${element.sales}</td>
+        </tr>
+        `;
+      });
+      view.render(table, tmp);
+      console.log(filterRegion);
+    });
+    view.domElements.modelSelect.addEventListener("change", (event) => {
+      const filterModel = model.res.filter(
+        (element) => element.model === event.target.value
+      );
+      let tmp = "";
+      filterModel.forEach((element) => {
+        tmp += `
+        <tr>
+          <td id="${element.region}">${element.region}</td>
+          <td id="${element.model}">${element.model}</td>
+          <td id="${element.sales}">${element.sales}</td>
+        </tr>
+        `;
+      });
+      view.render(table, tmp);
+      console.log(filterModel);
+    });
+  };
   const init = () => {
     createTable();
     createRegionList();
     createModelList();
+    setUpEvent();
   };
   return { init };
 })(View, Model);
