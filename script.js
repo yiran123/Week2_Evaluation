@@ -27,7 +27,7 @@ const Model = (() => {
     { region: "CA", model: "D", sales: 400 },
   ];
   //-----------sum--------------
-  let sum = data[0].sales;
+  let sum = 0;
   //result data array
   let res = [];
   //temporary holding data array
@@ -40,8 +40,9 @@ const Model = (() => {
     dataModel.add(data[i].model);
     tmp.push(data[i]);
     sum += data[i].sales;
+    console.log(data[i].region, sum);
     if (data[i].region !== data[i + 1].region) {
-      tmp.push({
+      tmp.unshift({
         region: data[i].region,
         model: "sum",
         sales: sum,
@@ -56,7 +57,7 @@ const Model = (() => {
   dataModel.add(data[data.length - 1].model);
   tmp.push(data[data.length - 1]);
   sum += data[data.length - 1].sales;
-  tmp.push({
+  tmp.unshift({
     region: data[data.length - 1].region,
     model: "sum",
     sales: sum,
