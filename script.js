@@ -28,39 +28,41 @@ const Model = (() => {
   ];
   //-----------sum--------------
   let sum = data[0].sales;
+  //result data array
   let res = [];
+  //temporary holding data array
   let tmp = [];
+  //-----------filtered data--------------
   let dataRegion = new Set();
   let dataModel = new Set();
-  tmp.push(data[0]);
-  //-----------filter--------------
-  dataRegion.add(data[0].region);
-  dataModel.add(data[0].model);
-  for (let i = 1; i < data.length; i++) {
+  for (let i = 0; i < data.length - 1; i++) {
     dataRegion.add(data[i].region);
     dataModel.add(data[i].model);
-    if (data[i].region !== data[i - 1].region) {
+    tmp.push(data[i]);
+    sum += data[i].sales;
+    if (data[i].region !== data[i + 1].region) {
       tmp.push({
-        region: data[i - 1].region,
+        region: data[i].region,
         model: "sum",
         sales: sum,
       });
       res = [...res, ...tmp];
       sum = 0;
-      //console.log(tmp);
       tmp = [];
     }
-    tmp.push(data[i]);
-    sum += data[i].sales;
-    if (i === data.length - 1) {
-      tmp.push({
-        region: data[i - 1].region,
-        model: "sum",
-        sales: sum,
-      });
-      res = [...res, ...tmp];
-    }
   }
+  //control the last element
+  dataRegion.add(data[data.length - 1].region);
+  dataModel.add(data[data.length - 1].model);
+  tmp.push(data[data.length - 1]);
+  sum += data[data.length - 1].sales;
+  tmp.push({
+    region: data[data.length - 1].region,
+    model: "sum",
+    sales: sum,
+  });
+  res = [...res, ...tmp];
+  console.log(res);
   //-----------sum end--------------
   return {
     res,
@@ -109,11 +111,17 @@ const Controller = ((view, model) => {
   const setUpEvent = () => {
     view.domElements.regionSelect.addEventListener("change", (event) => {
       view.domElements.regionSelect.value = event.target.value;
-      loadTableData(event.target.value, view.domElements.modelSelect.value);
+      loadTableData(
+        view.domElements.regionSelect.value,
+        view.domElements.modelSelect.value
+      );
     });
     view.domElements.modelSelect.addEventListener("change", (event) => {
       view.domElements.modelSelect.value = event.target.value;
-      loadTableData(view.domElements.regionSelect.value, event.target.value);
+      loadTableData(
+        view.domElements.regionSelect.value,
+        view.domElements.modelSelect.value
+      );
     });
   };
   const init = () => {
